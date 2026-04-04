@@ -1,213 +1,151 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog</title>
-    <style>
-        :root {
-            --bg: #eef0f3;
-            --card: #ffffff;
-            --primary: #3498db;
-            --text: #2b2b2b;
-            --muted: #6c757d;
-            --border: #d9dee3;
-        }
+{% extends "blog/base.html" %}
+{% block title %}Blog{% endblock %}
 
-        * {
-            box-sizing: border-box;
-        }
+{% block extra_css %}
+<style>
+    .hero {
+        background: var(--primary);
+        color: #fff;
+        padding: 24px 22px;
+    }
 
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-        }
+    .hero h1 {
+        margin: 0 0 8px 0;
+        font-size: 34px;
+    }
 
-        .page {
-            background: #f3f4f6;
-            overflow: hidden;
-            min-height: 100vh;
-        }
+    .hero p {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        opacity: 0.95;
+    }
 
-        .topbar {
-            background: #fff;
-            border-bottom: 1px solid var(--border);
-            padding: 14px 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    .blog-list-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 18px;
+        padding: 16px;
+        max-width: 1080px;
+        margin: 0 auto;
+    }
 
-        .brand {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
+    .post-card,
+    .side-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
 
-        .menu a {
-            color: #666;
-            text-decoration: none;
-            margin-left: 16px;
-            font-size: 14px;
-        }
+    .post-title {
+        margin: 0 0 6px;
+        font-size: 38px;
+    }
 
-        .hero {
-            background: var(--primary);
-            color: #fff;
-            padding: 24px 22px;
+    .post-meta {
+        color: var(--muted);
+        margin: 0 0 10px;
+        font-size: 18px;
+    }
+
+    .post-content {
+        margin: 0 0 14px;
+        font-size: 24px;
+        line-height: 1.45;
+    }
+
+    .blog-list-content .btn {
+        display: inline-block;
+        background: #1e88e5;
+        color: #fff;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 4px;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .side-title {
+        margin: 0 0 10px;
+        font-size: 30px;
+    }
+
+    .side-text {
+        font-size: 24px;
+        line-height: 1.45;
+        margin: 0 0 14px;
+    }
+
+    .btn-danger {
+        background: #ff2c1f;
+    }
+
+    .empty {
+        padding: 20px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 18px;
+    }
+
+    @media (max-width: 860px) {
+        .blog-list-content {
+            grid-template-columns: 1fr;
         }
 
         .hero h1 {
-            margin: 0 0 8px 0;
-            font-size: 34px;
+            font-size: 28px;
         }
 
         .hero p {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-            opacity: 0.95;
-        }
-
-        .content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 18px;
-            padding: 16px;
-            max-width: 1080px;
-            margin: 0 auto;   /* centers the grid container */
-
-        }
-
-        .post-card,
-        .side-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 14px;
-            margin-bottom: 12px;
+            font-size: 18px;
         }
 
         .post-title {
-            margin: 0 0 6px;
-            font-size: 38px;
-        }
-
-        .post-meta {
-            color: var(--muted);
-            margin: 0 0 10px;
-            font-size: 18px;
-        }
-
-        .post-content {
-            margin: 0 0 14px;
-            font-size: 24px;
-            line-height: 1.45;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #1e88e5;
-            color: #fff;
-            text-decoration: none;
-            padding: 8px 14px;
-            border-radius: 4px;
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .side-title {
-            margin: 0 0 10px;
             font-size: 30px;
         }
 
+        .post-content,
         .side-text {
-            font-size: 24px;
-            line-height: 1.45;
-            margin: 0 0 14px;
+            font-size: 20px;
         }
+    }
+</style>
+{% endblock %}
 
-        .btn-danger {
-            background: #ff2c1f;
-        }
+{% block content %}
+<section class="hero">
+    <h1>Welcome to my awesome Blog</h1>
+    <p>We Love Django As much as you do..!</p>
+</section>
 
-        .empty {
-            padding: 20px;
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 18px;
-        }
-
-        @media (max-width: 860px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-
-            .hero h1 {
-                font-size: 28px;
-            }
-
-            .hero p {
-                font-size: 18px;
-            }
-
-            .post-title {
-                font-size: 30px;
-            }
-
-            .post-content,
-            .side-text {
-                font-size: 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="page">
-        <header class="topbar">
-            <div class="brand">Blog</div>
-            <nav class="menu">
-                <a href="#">About</a>
-                <a href="#">Policy</a>
-                <a href="#">Contact</a>
-            </nav>
-        </header>
-
-        <section class="hero">
-            <h1>Welcome to my awesome Blog</h1>
-            <p>We Love Django As much as you do..!</p>
-        </section>
-
-        <main class="content">
-            <section>
-                {% if blogs %}
-                    {% for blog in blogs %}
-                        <article class="post-card">
-                            <h2 class="post-title">{{ blog.title }}</h2>
-                            <p class="post-meta">| {{ blog.created_at|date:"M d, Y, g:i a" }}</p>
-                            <p class="post-content">{{ blog.content|truncatewords:35 }}</p>
-                            <a class="btn" href="{% url 'post-detail' blog.id %}">Read More →</a>
-                        </article>
-                    {% endfor %}
-                {% else %}
-                    <div class="empty">No blogs available yet.</div>
-                {% endif %}
-            </section>
-
-            <aside>
-                <article class="side-card">
-                    <h3 class="side-title">About Us</h3>
-                    <p class="side-text">
-                        This awesome blog is made on the top of our favourite full stack
-                        framework "Django", follow this project to learn how we made it..!
-                    </p>
-                    <a class="btn btn-danger" href="#">Know more!</a>
+<main class="blog-list-content">
+    <section>
+        {% if blogs %}
+            {% for blog in blogs %}
+                <article class="post-card">
+                    <h2 class="post-title">{{ blog.title }}</h2>
+                    <p class="post-meta">| {{ blog.created_at|date:"M d, Y, g:i a" }}</p>
+                    <p class="post-content">{{ blog.content|truncatewords:35 }}</p>
+                    <a class="btn" href="{% url 'post-detail' blog.id %}">Read More →</a>
                 </article>
-            </aside>
-        </main>
-    </div>
-</body>
-</html>
+            {% endfor %}
+        {% else %}
+            <div class="empty">No blogs available yet.</div>
+        {% endif %}
+    </section>
+
+    <aside>
+        <article class="side-card">
+            <h3 class="side-title">About Us</h3>
+            <p class="side-text">
+                This awesome blog is made on the top of our favourite full stack
+                framework "Django", follow this project to learn how we made it..!
+            </p>
+            <a class="btn btn-danger" href="#">Know more!</a>
+        </article>
+    </aside>
+</main>
+{% endblock %}
