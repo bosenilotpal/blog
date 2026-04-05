@@ -105,16 +105,43 @@
         .site-footer a:hover {
             color: var(--primary);
         }
+
+        #django-messages-toast-container.toast-container {
+            z-index: 1090;
+            max-width: min(420px, calc(100vw - 2rem));
+        }
+
+        #django-messages-toast-container .toast {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    {% if messages %}
+    <div id="django-messages-toast-container" class="toast-container position-fixed top-0 end-0 p-3" aria-live="polite" aria-atomic="true">
+        {% for message in messages %}
+        <div class="toast align-items-center border-0 mb-2
+            {% if 'error' in message.tags %}text-bg-danger
+            {% elif 'success' in message.tags %}text-bg-success
+            {% elif 'warning' in message.tags %}text-bg-warning
+            {% elif 'debug' in message.tags %}text-bg-secondary
+            {% else %}text-bg-primary{% endif %}"
+            role="alert"
+            data-bs-delay="7000"
+            data-bs-autohide="true">
+            <div class="d-flex">
+                <div class="toast-body">{{ message }}</div>
+                <button type="button" class="btn-close {% if 'warning' in message.tags %}{% else %}btn-close-white{% endif %} me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <header class="site-header">
         <a class="brand" href="{% url 'blog-list' %}">Blog</a>
         <nav class="site-nav" aria-label="Main">
-            <a href="{% url 'blog-list' %}">Home</a>
-            <a href="#">About</a>
-            <a href="#">Contact</a>
             {% if user.is_authenticated %}
                 <span>Welcome, {{ user.username }}!</span>
                 <a href="{% url 'logout' %}">Logout</a>
@@ -143,6 +170,17 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var container = document.getElementById('django-messages-toast-container');
+            if (!container) return;
+            container.querySelectorAll('.toast').forEach(function (el) {
+                var delay = parseInt(el.getAttribute('data-bs-delay'), 10);
+                if (isNaN(delay)) delay = 6000;
+                new bootstrap.Toast(el, { delay: delay, autohide: el.getAttribute('data-bs-autohide') !== 'false' }).show();
+            });
+        });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
