@@ -16,17 +16,26 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Optional persistent app data (SQLite, uploads, logs) when set — e.g. Docker volume mount.
+_data_path = Path(os.environ['DJANGO_DATA_DIR']) if os.environ.get('DJANGO_DATA_DIR') else None
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pc4l@99k)66=u0a_c%gf!4ukt#6z-ws1iahc6&7828tylys9e_'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-pc4l@99k)66=u0a_c%gf!4ukt#6z-ws1iahc6&7828tylys9e_',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+    if h.strip()
+]
 
 
 # Application definition
@@ -41,7 +50,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'crispy_bootstrap5',
-    'posts',
+    'posts.apps.PostsConfig',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
@@ -86,7 +95,7 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': (_data_path / 'db.sqlite3') if _data_path else (BASE_DIR / 'db.sqlite3'),
     }
 }
 
@@ -128,8 +137,76 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT= os.path.join(BASE_DIR, 'static')
 
-MEDIA_URL= '/media/'
-MEDIA_ROOT= os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = (
+    str(_data_path / 'media') if _data_path else os.path.join(BASE_DIR, 'media')
+)
 
 # Auth redirects (paths match blog.urls)
 LOGIN_URL = '/login'
+
+# Cache
+# https://docs.djangoproject.com/en/stable/topics/cache/
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'blog',
+        'TIMEOUT': 300,
+        'OPTIONS': {'MAX_ENTRIES': 500},
+    }
+}
+
+# Logging
+_LOG_DIR = (_data_path / 'logs') if _data_path else (BASE_DIR / 'logs')
+_LOG_DIR.mkdir(parents=True, exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {name} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+            'level': 'INFO',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': str(_LOG_DIR / 'django.log'),
+            'maxBytes': 5 * 1024 * 1024,
+            'backupCount': 5,
+            'formatter': 'verbose',
+            'level': 'INFO',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'posts': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG' if DEBUG else 'INFO',
+            'propagate': False,
+        },
+    },
+}

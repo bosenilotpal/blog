@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_DATA_DIR: /data
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,web
+      # Set to false for a stricter production-like container.
+      DJANGO_DEBUG: "true"
+    volumes:
+      - app_data:/data
+
+volumes:
+  app_data:

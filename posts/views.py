@@ -1,21 +1,36 @@
+import logging
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import PasswordResetConfirmView, PasswordResetView
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.cache import cache
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 
+from .cache_keys import BLOG_LIST_CACHE_KEY, post_detail_cache_key
 from .forms import LoginForm, NewUserForm, PasswordResetFormPrintToken
 from .models import Comment, Post
 
+logger = logging.getLogger(__name__)
+
 
 def blog_list(request):
-    blogs = Post.objects.all()
+    blogs = cache.get(BLOG_LIST_CACHE_KEY)
+    if blogs is None:
+        blogs = list(Post.objects.all())
+        cache.set(BLOG_LIST_CACHE_KEY, blogs)
+        logger.debug("blog_list cache miss; stored %s posts", len(blogs))
     return render(request, "posts/blog_list.html", {"blogs": blogs})
 
 
 def post_detail(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
+    cache_key = post_detail_cache_key(post_id)
+    post = cache.get(cache_key)
+    if post is None:
+        post = get_object_or_404(Post, id=post_id)
+        cache.set(cache_key, post)
+        logger.debug("post_detail cache miss for post_id=%s", post_id)
     if request.method == "POST":
         if not request.user.is_authenticated:
             messages.error(request, "You must be signed in to add a comment.")
@@ -23,6 +38,11 @@ def post_detail(request, post_id):
         content = request.POST.get("content", "").strip()
         if content:
             Comment.objects.create(blog=post, content=content)
+            logger.info(
+                "Comment created on post_id=%s by user=%s",
+                post.id,
+                request.user.get_username(),
+            )
             messages.success(request, "Your comment was posted.")
         else:
             messages.warning(request, "Comment cannot be empty.")
@@ -41,6 +61,7 @@ def register_request(request):
         form = NewUserForm(request.POST)
         if form.is_valid():
             form.save()
+            logger.info("New user registered: %s", form.cleaned_data.get("username", ""))
             messages.success(
                 request,
                 "Account created successfully. You can log in now.",
@@ -64,8 +85,10 @@ def login_request(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                logger.info("User logged in: %s", user.get_username())
                 messages.success(request, f"Welcome back, {user.get_username()}!")
                 return redirect("blog-list")
+        logger.warning("Failed login attempt for username=%s", request.POST.get("username", ""))
         messages.error(
             request,
             "Login failed. Check your username and password and try again.",
@@ -76,6 +99,8 @@ def login_request(request):
 
 
 def logout_request(request):
+    if request.user.is_authenticated:
+        logger.info("User logged out: %s", request.user.get_username())
     logout(request)
     messages.success(request, "You have been logged out.")
     return redirect("blog-list")
