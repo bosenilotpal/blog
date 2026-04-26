@@ -1,0 +1,27 @@
+INFO 2026-04-25 13:49:26,830 django.utils.autoreload autoreload Watching for file changes with StatReloader
+INFO 2026-04-25 13:49:35,300 django.server log "GET / HTTP/1.1" 200 7388
+INFO 2026-04-25 13:49:42,790 django.server log "GET /posts/1/ HTTP/1.1" 200 10026
+INFO 2026-04-25 13:49:47,358 django.server log "GET /login HTTP/1.1" 200 5511
+WARNING 2026-04-25 13:49:51,762 posts.views views Failed login attempt for username=bosenilotpal
+INFO 2026-04-25 13:49:51,764 django.server log "POST /login HTTP/1.1" 200 6388
+WARNING 2026-04-25 13:50:00,623 posts.views views Failed login attempt for username=john@gmail.com
+INFO 2026-04-25 13:50:00,627 django.server log "POST /login HTTP/1.1" 200 6390
+WARNING 2026-04-25 13:50:19,987 posts.views views Failed login attempt for username=bosenilotpal
+INFO 2026-04-25 13:50:19,992 django.server log "POST /login HTTP/1.1" 200 6388
+WARNING 2026-04-25 13:50:24,906 posts.views views Failed login attempt for username=bosenilotpal
+INFO 2026-04-25 13:50:24,910 django.server log "POST /login HTTP/1.1" 200 6388
+WARNING 2026-04-25 13:50:32,192 posts.views views Failed login attempt for username=bosenilotpal
+INFO 2026-04-25 13:50:32,196 django.server log "POST /login HTTP/1.1" 200 6388
+INFO 2026-04-25 13:50:34,047 django.server log "GET /password-reset HTTP/1.1" 200 5310
+INFO 2026-04-25 13:50:37,206 django.server log "POST /password-reset HTTP/1.1" 302 0
+INFO 2026-04-25 13:50:37,211 django.server log "GET /password-reset/done HTTP/1.1" 200 5424
+INFO 2026-04-25 13:50:48,425 django.server log "GET /password-reset/confirm/Mg/d7lfsd-887c615618158323d135a213c18e4761/ HTTP/1.1" 302 0
+INFO 2026-04-25 13:50:48,443 django.server log "GET /password-reset/confirm/Mg/set-password/ HTTP/1.1" 200 5972
+INFO 2026-04-25 13:51:01,614 django.server log "POST /password-reset/confirm/Mg/set-password/ HTTP/1.1" 302 0
+INFO 2026-04-25 13:51:01,620 django.server log "GET /password-reset/complete HTTP/1.1" 200 5288
+INFO 2026-04-25 13:51:03,065 django.server log "GET /login HTTP/1.1" 200 5511
+WARNING 2026-04-25 13:51:08,625 posts.views views Failed login attempt for username=bosenilotpal
+INFO 2026-04-25 13:51:08,630 django.server log "POST /login HTTP/1.1" 200 6388
+INFO 2026-04-25 13:51:14,154 posts.views views User logged in: bosenilotpal
+INFO 2026-04-25 13:51:14,158 django.server log "POST /login HTTP/1.1" 302 0
+INFO 2026-04-25 13:51:14,168 django.server log "GET / HTTP/1.1" 200 8041
